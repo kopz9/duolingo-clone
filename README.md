@@ -1,2 +1,7 @@
 # Duolingo Clone
 
+npm run dev
+
+.env 
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
