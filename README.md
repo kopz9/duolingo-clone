@@ -13,4 +13,6 @@ DATABASE_URL=
 
 run db: 
 npm run db:push
+
+check db:
 npm run db:studio
