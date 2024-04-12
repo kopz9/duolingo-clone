@@ -46,7 +46,7 @@ const main = async () => {
         id: 1,
         title: "Unit 1",
         courseId: 1,
-        description: "Learn the basics ofSpanish",
+        description: "Learn the basics of Spanish",
         order: 1,
       },
     ]);
@@ -56,6 +56,30 @@ const main = async () => {
         id: 1,
         unitId: 1,
         order: 1,
+        title: "Nouns",
+      },
+      {
+        id: 2,
+        unitId: 1,
+        order: 2,
+        title: "Verbs",
+      },
+      {
+        id: 3,
+        unitId: 1,
+        order: 3,
+        title: "Nouns",
+      },
+      {
+        id: 4,
+        unitId: 1,
+        order: 4,
+        title: "Nouns",
+      },
+      {
+        id: 5,
+        unitId: 1,
+        order: 5,
         title: "Nouns",
       },
     ]);
@@ -76,26 +100,26 @@ const main = async () => {
         challengeId: 1,
         text: "el hombre",
         correct: true,
-        imageSrc: '/man.svg',
-        audioSrc: '/es_man.mp3',
+        imageSrc: "/man.svg",
+        audioSrc: "/es_man.mp3",
       },
       {
         id: 2,
         challengeId: 1,
         text: "la mujer",
         correct: false,
-        imageSrc: '/woman.svg',
-        audioSrc: '/es_woman.mp3',
+        imageSrc: "/woman.svg",
+        audioSrc: "/es_woman.mp3",
       },
       {
         id: 3,
         challengeId: 1,
         text: "el robot",
         correct: false,
-        imageSrc: '/robot.svg',
-        audioSrc: '/es_robot.mp3',
-      }
-    ])
+        imageSrc: "/robot.svg",
+        audioSrc: "/es_robot.mp3",
+      },
+    ]);
 
     console.log("Seeding finished");
   } catch (error) {
