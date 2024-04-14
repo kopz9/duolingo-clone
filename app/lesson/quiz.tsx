@@ -5,10 +5,15 @@ import { useState, useTransition } from "react";
 import { Header } from "./header";
 import { QuestionBubble } from "./question-bubble";
 import { Challenge } from "./challenge";
+import Confetti from "react-confetti";
 import { Footer } from "./footer";
 import { upsertChallengeProgress } from "@/actions/challenge-progress";
 import { toast } from "sonner";
 import { reduceHearts } from "@/actions/user-progress";
+import Image from "next/image";
+import { ResultCard } from "./result-card";
+import { useAudio, useWindowSize } from "react-use";
+import { useRouter } from "next/navigation";
 
 type Props = {
   initialPercentage: number;
@@ -28,7 +33,17 @@ export const Quiz = ({
   initialLessonChallenges,
   userSubscription,
 }: Props) => {
+  const { width, height } = useWindowSize();
+
+  const router = useRouter();
+
+  const [finishAudio] = useAudio({ src: "finish.mp3", autoPlay: true });
+
+  const [correctAudio, _c, correctControls] = useAudio({ src: "correct.wav" });
+
   const [pending, startTransition] = useTransition();
+
+  const [lessonId] = useState(initialLessonId);
 
   const [hearts, setHearts] = useState(initialHearts);
   const [percentage, setPercentage] = useState(initialPercentage);
@@ -61,7 +76,6 @@ export const Quiz = ({
 
     if (status === "wrong") {
       setStatus("none");
-      setSelectedOption(undefined);
       return;
     }
 
@@ -76,17 +90,19 @@ export const Quiz = ({
 
     if (correctOption && correctOption.id !== selectedOption) {
       startTransition(() => {
-        reduceHearts(challenge.id).then((response) => {
-          if (response?.error === "hearts") {
-            console.error("missing hearts");
-            return;
-          }
-          setStatus('wrong');
+        reduceHearts(challenge.id)
+          .then((response) => {
+            if (response?.error === "hearts") {
+              console.error("missing hearts");
+              return;
+            }
+            setStatus("wrong");
 
-          if (!response?.error){
-            setHearts((prev) => Math.max(prev - 1, 0));
-          }
-        }).catch(() => toast.error("Something went wrong. Please try again."));
+            if (!response?.error) {
+              setHearts((prev) => Math.max(prev - 1, 0));
+            }
+          })
+          .catch(() => toast.error("Something went wrong. Please try again."));
       });
     }
 
@@ -108,6 +124,49 @@ export const Quiz = ({
         .catch(() => toast.error("something went wrong"));
     });
   };
+
+  if (!challenge) {
+    return (
+      <>
+        {finishAudio}
+        <Confetti
+          width={width}
+          height={height}
+          recycle={false}
+          numberOfPieces={500}
+          tweenDuration={1000}
+        />
+        <div className="flex flex-col gap-y-4 lg:gap-y-8 max-w-lg mx-auto text-center items-center justify-center h-full">
+          <Image
+            src="/finish.svg"
+            alt="Finish"
+            width={100}
+            height={100}
+            className="hidden lg:block"
+          />
+          <Image
+            src="/finish.svg"
+            alt="Finish"
+            width={50}
+            height={50}
+            className="block lg:hidden"
+          />
+          <h1 className="text-xl lg:text-3xl font-bold text-neutral-700">
+            Great job <br /> You&apos;ve completed the lesson.
+          </h1>
+          <div className="flex items-center gap-x-4 w-full">
+            <ResultCard variant="points" value={challenges.length * 10} />
+            <ResultCard variant="hearts" value={hearts} />
+          </div>
+        </div>
+        <Footer
+          lessonId={lessonId}
+          status="completed"
+          onCheck={() => router.push("/learn")}
+        />
+      </>
+    );
+  }
 
   const title =
     challenge.type === "ASSIST"

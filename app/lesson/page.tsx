@@ -27,7 +27,7 @@ const LessonPage = async () => {
       initialPercentage={initialPercentage}
       userSubscription={undefined}
     />
-  )
+  );
 };
 
 export default LessonPage;
