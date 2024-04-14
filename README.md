@@ -19,3 +19,8 @@ npm run db:seed //fill courses
 check db:
 npm run db:studio
 
+
+
+TODOs:
+
+find the images 
