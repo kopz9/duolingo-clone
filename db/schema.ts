@@ -23,8 +23,10 @@ export const units = pgTable("units", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
   description: text("description").notNull(),
-  courseId: integer("course_id").notNull().references(() => courses.id, {onDelete:
-     "cascade",}).notNull(),
+  courseId: integer("course_id")
+    .notNull()
+    .references(() => courses.id, { onDelete: "cascade" })
+    .notNull(),
   order: integer("order").notNull(),
 });
 

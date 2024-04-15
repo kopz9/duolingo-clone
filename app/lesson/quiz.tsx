@@ -12,8 +12,10 @@ import { toast } from "sonner";
 import { reduceHearts } from "@/actions/user-progress";
 import Image from "next/image";
 import { ResultCard } from "./result-card";
-import { useAudio, useWindowSize } from "react-use";
+import { useAudio, useWindowSize, useMount } from "react-use";
 import { useRouter } from "next/navigation";
+import { useHeartsModal } from "@/store/use-hearts-modal";
+import { usePracticeModal } from "@/store/use-practice-modal";
 
 type Props = {
   initialPercentage: number;
@@ -33,6 +35,16 @@ export const Quiz = ({
   initialLessonChallenges,
   userSubscription,
 }: Props) => {
+  const { open: openHeartsModal } = useHeartsModal();
+  const { open: openPracticeModal } = usePracticeModal();
+
+  useMount(() => {
+    if(initialPercentage === 100) {
+      openPracticeModal();
+    }
+  })
+
+
   const { width, height } = useWindowSize();
 
   const router = useRouter();
@@ -46,7 +58,9 @@ export const Quiz = ({
   const [lessonId] = useState(initialLessonId);
 
   const [hearts, setHearts] = useState(initialHearts);
-  const [percentage, setPercentage] = useState(initialPercentage);
+  const [percentage, setPercentage] = useState(() => {
+    return initialPercentage === 100 ? 0 : initialPercentage;
+  }); 
   const [challenges] = useState(initialLessonChallenges);
   const [activeIndex, setActiveIndex] = useState(() => {
     const uncompletedIndex = challenges.findIndex(
@@ -93,7 +107,7 @@ export const Quiz = ({
         reduceHearts(challenge.id)
           .then((response) => {
             if (response?.error === "hearts") {
-              console.error("missing hearts");
+              openHeartsModal();
               return;
             }
             setStatus("wrong");
@@ -104,25 +118,25 @@ export const Quiz = ({
           })
           .catch(() => toast.error("Something went wrong. Please try again."));
       });
+    } else {
+      startTransition(() => {
+        upsertChallengeProgress(challenge.id)
+          .then((response) => {
+            if (response?.error === "hearts") {
+              openHeartsModal();
+              return;
+            }
+
+            setStatus("correct");
+            setPercentage((prev) => prev + 100 / challenges.length);
+
+            if (initialPercentage === 100) {
+              setHearts((prev) => Math.min(prev + 1, 5));
+            }
+          })
+          .catch(() => toast.error("something went wrong"));
+      });
     }
-
-    return startTransition(() => {
-      upsertChallengeProgress(challenge.id)
-        .then((response) => {
-          if (response?.error === "hearts") {
-            console.error("missing hearts");
-            return;
-          }
-
-          setStatus("correct");
-          setPercentage((prev) => prev + 100 / challenges.length);
-
-          if (initialPercentage === 100) {
-            setHearts((prev) => Math.min(prev + 1, 5));
-          }
-        })
-        .catch(() => toast.error("something went wrong"));
-    });
   };
 
   if (!challenge) {
