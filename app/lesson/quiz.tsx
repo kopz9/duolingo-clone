@@ -1,6 +1,6 @@
 "use client";
 
-import { challengeOptions, challenges } from "@/db/schema";
+import { challengeOptions, challenges, userSubscription } from "@/db/schema";
 import { useState, useTransition } from "react";
 import { Header } from "./header";
 import { QuestionBubble } from "./question-bubble";
@@ -25,7 +25,11 @@ type Props = {
     completed: boolean;
     challengeOptions: (typeof challengeOptions.$inferSelect)[];
   })[];
-  userSubscription: any; // add subscription DB type
+  userSubscription:
+    | (typeof userSubscription.$inferSelect & {
+        isActive: boolean;
+      })
+    | null;
 };
 
 export const Quiz = ({
@@ -39,11 +43,10 @@ export const Quiz = ({
   const { open: openPracticeModal } = usePracticeModal();
 
   useMount(() => {
-    if(initialPercentage === 100) {
+    if (initialPercentage === 100) {
       openPracticeModal();
     }
-  })
-
+  });
 
   const { width, height } = useWindowSize();
 
@@ -60,7 +63,7 @@ export const Quiz = ({
   const [hearts, setHearts] = useState(initialHearts);
   const [percentage, setPercentage] = useState(() => {
     return initialPercentage === 100 ? 0 : initialPercentage;
-  }); 
+  });
   const [challenges] = useState(initialLessonChallenges);
   const [activeIndex, setActiveIndex] = useState(() => {
     const uncompletedIndex = challenges.findIndex(
