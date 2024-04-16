@@ -16,7 +16,7 @@ const ShopPage = async () => {
     redirect("/courses");
   }
 
-  const isPro = !!userSubscription?.isActice;
+  const isPro = !!userSubscription?.isActive;
 
   return (
     <div className="flex flex-row-reverse gap-[48px] px-6">
