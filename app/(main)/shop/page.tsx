@@ -5,12 +5,17 @@ import { getUserProgress, getUserSubscription } from "@/db/queries";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { Items } from "./items";
+import { Promo } from "@/components/promo";
+import { Quests } from "@/components/quests";
 
 const ShopPage = async () => {
   const userProgressData = getUserProgress();
   const userSubscriptionData = getUserSubscription();
 
-  const [userProgress, userSubscription] = await Promise.all([userProgressData, userSubscriptionData]);
+  const [userProgress, userSubscription] = await Promise.all([
+    userProgressData,
+    userSubscriptionData,
+  ]);
 
   if (!userProgress || !userProgress.activeCourse) {
     redirect("/courses");
@@ -27,6 +32,8 @@ const ShopPage = async () => {
           points={userProgress.points}
           hasActiveSubscription={isPro}
         />
+        {!isPro && <Promo />}
+        <Quests points={userProgress.points} />
       </StickyWrapper>
       <FeedWrapper>
         <div className="w-full flex flex-col items-center">
@@ -37,10 +44,10 @@ const ShopPage = async () => {
           <p className="text-muted-foreground text-center text-lg mb-6">
             Spend your points in cool stuff.
           </p>
-          <Items 
+          <Items
             hearts={userProgress.hearts}
             points={userProgress.points}
-            hasActiveSubscription={isPro} 
+            hasActiveSubscription={isPro}
           />
         </div>
       </FeedWrapper>
