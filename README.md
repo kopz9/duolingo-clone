@@ -1,5 +1,7 @@
 # Duolingo Clone
 
+Deploy link: https://duolingo-clone-green.vercel.app/
+
 npm run dev
 
 .env 
