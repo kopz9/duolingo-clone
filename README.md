@@ -18,6 +18,7 @@ DATABASE_URL=
 run db: 
 npm run db:push
 npm run db:seed //fill courses
+npm run db:reset // reset db
 
 
 check db:
