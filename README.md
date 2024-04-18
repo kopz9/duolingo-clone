@@ -27,6 +27,7 @@ run db scripts:
 npm run db:push
 npm run db:seed //fill courses
 npm run db:reset // reset db
+npm run db:prod // set prod env
 ````
 
 check db:
